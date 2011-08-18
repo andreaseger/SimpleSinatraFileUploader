@@ -21,6 +21,10 @@ module Sinatra
       section(:js) { haml "%script{:src=>'#{file}'}" }
     end
 
+    def stylesheet(file)
+      section(:css) { haml "%link{:rel=>'stylesheet', :href=>'#{file}'}" }
+    end
+
     def show_title?
       @show_title
     end

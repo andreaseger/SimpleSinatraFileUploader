@@ -25,10 +25,20 @@ class Service < Sinatra::Base
   end
 
   post '/' do
-    tempfile = params['file'][:tempfile]
-    filename = params['file'][:filename]
-    FileUtils.cp(tempfile.path, "#{image_base_dir}/#{filename}")
-    redirect '/'
+    data = params['qqfile']
+    if data[:tempfile]
+      #form-data
+      tempfile = data[:tempfile]
+      filename = data[:filename]
+      FileUtils.cp(tempfile.path, "#{image_base_dir}/#{filename}")
+    else
+      filename = data
+      raw = request.env["rack.input"].read
+      File.open("#{image_base_dir}/#{filename}", "w") do |f| 
+        f.puts raw
+      end
+    end
+    "{success:true, error:'', filename:'#{filename}', link:'#{image_base_dir}/#{filename}'}"
   end
   get '/remove/:filename' do |filename|
     FileUtils.rm("#{image_base_dir}/#{filename}")
@@ -36,7 +46,7 @@ class Service < Sinatra::Base
   end
 
   def image_base_dir
-    @image_base_dir ||= "./public/#{ENV['image-dir']}"
+    @image_base_dir ||= "./public/#{ENV['images-dir']}"
   end
   run! if app_file == $0
 end
