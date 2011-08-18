@@ -1,0 +1,27 @@
+!!! 5
+<!--[if lt IE 7]> <html lang="en" class="no-js ie6 oldie"> <![endif]-->
+<!--[if IE 7]>    <html lang="en" class="no-js ie7 oldie"> <![endif]-->
+<!--[if IE 8]>    <html lang="en" class="no-js ie8 oldie"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en" class="no-js"> <!--<![endif]-->
+%head
+  %meta{:charset=>"utf-8"}
+
+  %title
+    = section(:title)
+
+  %meta{:name=>"viewport", :content=>"width=device-width,initial-scale=1"}
+
+  %link{:rel=>"stylesheet", :href=>"/screen.css"}
+  %link{:rel=>"shortcut icon", :href=>"/favicon.ico"}
+  %link{:rel=>"apple-touch-icon", :href=>"/apple-touch-icon.png"}
+  %script{:src=>"/modernizr-2.0.6.js"}
+%body
+  #container
+    %header
+      - if show_title?
+        %h1= section(:title)
+    %div{:id=>"main", :role=>"main"}
+      = yield
+    %footer
+      sch1zo
+  =section(:js)

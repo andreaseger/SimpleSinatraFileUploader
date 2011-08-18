@@ -1,0 +1,8 @@
+rvm use ree@imageuploader --create
+
+#install bundler if its not already
+if ! command -v bundle ; then
+  gem install bundler
+fi
+# Bundle while reducing excess noise.
+bundle | grep -v 'Using' | grep -v 'complete' | sed '/^$/d'
