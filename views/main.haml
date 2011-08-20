@@ -6,13 +6,7 @@
       %input{:id=>'upload-input', :type=>'file', :name=>'file'}
       %input{:type=>'submit', :value=>"Upload!"}
 
-%ul.list
-  - @list.each do |f|
-    %li
-      %a{:href=>"/i/#{f}", :class=>'link'}
-        =f
-      %a{:href=>"/remove/#{f}", :class=>'remove'}
-        remove
+%ul#image-list
 
 -stylesheet '/fileuploader.css'
 -javascript '/fileuploader.js'

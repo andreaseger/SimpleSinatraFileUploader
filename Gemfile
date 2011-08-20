@@ -2,11 +2,12 @@
 source "http://rubygems.org"
 
 gem 'sinatra'
-#gem 'sinatra-coffee'
 gem 'haml'
+gem 'json'
 
 group :development do
   gem 'sinatra-reloader'
+  gem 'passenger'
   gem 'ruby-debug'
 
   #irb stuff
