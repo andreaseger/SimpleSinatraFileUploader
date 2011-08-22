@@ -46,9 +46,6 @@ function addListEntry(list, link, name){
   item.appendChild(removeLink);
   list.appendChild(item);
 };
-function getListOfExistingImages(){
-  xmlHttpPost('/filelist','test=true',createList);
-};
 
 function createUploader(){
   var uploader = new qq.FileUploader({
@@ -57,7 +54,9 @@ function createUploader(){
     allowedExtensions: ['jpg','jpeg','png'],
     onComplete: function(id, fileName, responseJSON){
       var list = document.getElementById('image-list');
-      addListEntry(list,responseJSON.link,fileName);
+      if(responseJSON.success === true){
+        addListEntry(list,responseJSON.link,fileName);
+      }
     },
     messages: {
       typeError: "{file} has invalid extension. Only {extensions} are allowed.",
@@ -75,3 +74,5 @@ function createUploader(){
 // in your app create uploader as soon as the DOM is ready
 // don't wait for the window to load
 window.onload = createUploader;
+
+xmlHttpPost('/filelist','test=true',createList);

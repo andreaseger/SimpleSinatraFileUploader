@@ -26,37 +26,72 @@ class Service < Sinatra::Base
   end
 
   post '/filelist' do
-    Dir.glob("#{image_base_dir}/*.*").map{|f| f.split('/').last}.map{|f| {"link"=>"/#{ENV['images-dir']}/#{f}","filename"=>f}}.to_json
+    Dir.glob("#{image_base_dir}/*.*").map{|f| f.split('/').last}.map{|f| {"link"=>"/#{@@env.imageStorage}/#{f}","filename"=>f}}.to_json
   end
 
   post '/' do
-    success = true
-    data = params['qqfile']
-    if data[:tempfile]
-      #form-data
-      tempfile = data[:tempfile]
-      filename = data[:filename]
-      FileUtils.cp(tempfile.path, "#{image_base_dir}/#{filename}")
-    else
-      #raw data
-      filename = data
-      raw = request.env["rack.input"].read
-      File.open("#{image_base_dir}/#{filename}", "w") do |f| 
-        f.puts raw
-      end
-    end
-    "{success:#{success}, error:'', link:'/#{ENV['images-dir']}/#{filename}'}"
+    filename, success = save params['qqfile']
+    "{success:#{success}, error:'', link:'/#{@@env.imageStorage}/#{filename}'}"
   end
 
   delete '/remove' do
+    require 'ruby-debug/debugger'
     filename = params['filename']
     FileUtils.rm("#{image_base_dir}/#{filename}")
     redirect '/'
   end
 
-  def image_base_dir
-    @image_base_dir ||= "./public/#{ENV['images-dir']}"
-  end
-  run! if app_file == $0
-end
+private
 
+  def image_base_dir
+    @image_base_dir ||= "./public/#{@@env.imageStorage}"
+  end
+  def save(data)
+    if data[:tempfile]
+      return saveForm data
+    else
+      return saveRaw data
+    end
+  end
+  def saveRaw(data)
+    filename = data
+    raw = request.env["rack.input"].read
+    valid, errors = validate raw.size, filename, nil
+    if valid
+      File.open("#{image_base_dir}/#{filename}", "w") do |f| 
+        f.puts raw
+      end
+    end
+    return filename, valid
+  end
+  def saveForm(data)
+    tempfile = data[:tempfile]
+    filename = data[:filename]
+    valid, errors = validate tempfile.size, filename, data[:type]
+    if valid
+      FileUtils.cp(tempfile.path, "#{image_base_dir}/#{filename}")
+    end
+    return filename, valid
+  end
+  def validate(size, filename, mime)
+    errors={}
+    valid = true
+
+    if size/1024/1024 >= @@env.imageMaxSize
+      valid = false
+      errors[:size] = "file to big"
+    end
+    if mime
+      unless mime =~ /image.*/
+        valid = false
+        errors[:mime] = "wrong mime type"
+      end
+    end
+    unless filename =~ /(jpeg|jpg|png)/
+      valid = false
+      errors[:extention] = "extention not allowed"
+    end
+
+    return valid, errors
+  end
+end

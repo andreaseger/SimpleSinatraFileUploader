@@ -9,6 +9,7 @@ group :development do
   gem 'sinatra-reloader'
   gem 'passenger'
   gem 'ruby-debug'
+  #gem 'sprockets'
 
   #irb stuff
   gem 'wirble'
