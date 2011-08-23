@@ -25,9 +25,11 @@ function createList(json){
     addListEntry(div,e.link, e.filename);
   }
 };
-function sendDelete(){
-  var name = "doo";
-  xmlHttpPost('/remove','filename=' + name + '&_method=delete',function(json){})
+function sendDelete(e){
+  e.preventDefault();
+  var name = e.target.dataset['name'];
+  var action = e.target.dataset['action'];
+  xmlHttpPost(action,'filename=' + name + '&_method=delete',function(json){})
 };
 function addListEntry(list, link, name){
   var item = document.createElement('li');

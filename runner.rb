@@ -2,6 +2,7 @@ require './env'
 require 'sinatra/base'
 require "sinatra/reloader" unless ENV['RACK_ENV'].to_sym == :production
 require 'json'
+require 'haml'
 
 require './lib/helper'
 
@@ -26,12 +27,12 @@ class Service < Sinatra::Base
   end
 
   post '/filelist' do
-    Dir.glob("#{image_base_dir}/*.*").map{|f| f.split('/').last}.map{|f| {"link"=>"/#{@@env.imageStorage}/#{f}","filename"=>f}}.to_json
+    filelist.map{|f| {"link"=>"/#{@@env.imageStorage}/#{f}","filename"=>f}}.to_json
   end
 
   post '/' do
-    filename, success = save params['qqfile']
-    "{success:#{success}, error:'', link:'/#{@@env.imageStorage}/#{filename}'}"
+    filename, success, errors = save params['qqfile']
+    "{success:#{success}, errors:#{errors}, link:'/#{@@env.imageStorage}/#{filename}'}"
   end
 
   delete '/remove' do
@@ -45,6 +46,9 @@ private
 
   def image_base_dir
     @image_base_dir ||= "./public/#{@@env.imageStorage}"
+  end
+  def filelist
+    Dir.glob("#{image_base_dir}/*.*").map{|f| f.split('/').last}
   end
   def save(data)
     if data[:tempfile]
@@ -62,7 +66,7 @@ private
         f.puts raw
       end
     end
-    return filename, valid
+    return filename, valid, errors
   end
   def saveForm(data)
     tempfile = data[:tempfile]
@@ -71,7 +75,7 @@ private
     if valid
       FileUtils.cp(tempfile.path, "#{image_base_dir}/#{filename}")
     end
-    return filename, valid
+    return filename, valid, errors
   end
   def validate(size, filename, mime)
     errors={}
@@ -91,7 +95,6 @@ private
       valid = false
       errors[:extention] = "extention not allowed"
     end
-
     return valid, errors
   end
 end
