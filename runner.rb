@@ -27,12 +27,12 @@ class Service < Sinatra::Base
   end
 
   post '/filelist' do
-    filelist.map{|f| {"link"=>"/#{@@env.imageStorage}/#{f}","filename"=>f}}.to_json
+    filelist.map{|f| {"link"=>"/#{$env.imageStorage}/#{f}","filename"=>f}}.to_json
   end
 
   post '/' do
     filename, success, errors = save params['qqfile']
-    "{success:#{success}, errors:#{errors}, link:'/#{@@env.imageStorage}/#{filename}'}"
+    "{success:#{success}, errors:#{errors}, link:'/#{$env.imageStorage}/#{filename}'}"
   end
 
   delete '/remove' do
@@ -45,43 +45,49 @@ class Service < Sinatra::Base
 private
 
   def image_base_dir
-    @image_base_dir ||= "./public/#{@@env.imageStorage}"
+    @image_base_dir ||= "./public/#{$env.imageStorage}"
   end
   def filelist
     Dir.glob("#{image_base_dir}/*.*").map{|f| f.split('/').last}
   end
   def save(data)
     if data[:tempfile]
-      return saveForm data
+      tempfile = data[:tempfile]
+      filename = data[:filename]
     else
-      return saveRaw data
+      raw = request.env["rack.input"].read
+      tempfile saveAsTmpFile(raw)
+      filename = data
     end
-  end
-  def saveRaw(data)
-    filename = data
-    raw = request.env["rack.input"].read
-    valid, errors = validate raw.size, filename, nil
-    if valid
-      File.open("#{image_base_dir}/#{filename}", "w") do |f| 
-        f.puts raw
-      end
-    end
+    valid, errors = validate tempfile.size, data[:type]
+    filename, write = getFilename(filename, tempfile)
+    errors[:not_new] = "the same file already existed" unless write
+    FileUtils.cp(tempfile.path, "#{image_base_dir}/#{filename}") if valid && write
     return filename, valid, errors
   end
-  def saveForm(data)
-    tempfile = data[:tempfile]
-    filename = data[:filename]
-    valid, errors = validate tempfile.size, filename, data[:type]
-    if valid
-      FileUtils.cp(tempfile.path, "#{image_base_dir}/#{filename}")
+  def getFilename(org, tempfile)
+    unless filelist.include? org
+      return org, true
     end
-    return filename, valid, errors
+    if FileUtils.compare_stream("#{image_base_dir}/#{org}", tempfile.path)
+      return org, false
+    else
+      i=(org =~ /\.(png|jpg)$/)
+      return "#{org[0..i-1]}_#{Time.now.to_i}#{org[i..org.size]}",true
+    end
+  end
+  def saveAsTmpFile(raw)
+    name = "#{Time.now.to_i}_#{raw.hash}"
+    File.open("./tmp/#{name}", "w") do |f| 
+      f.puts raw
+    end
+    name
   end
   def validate(size, filename, mime)
     errors={}
     valid = true
 
-    if size/1024/1024 >= @@env.imageMaxSize
+    if size >= $env.imageMaxSize
       valid = false
       errors[:size] = "file to big"
     end
