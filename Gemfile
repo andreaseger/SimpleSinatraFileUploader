@@ -7,9 +7,15 @@ gem 'json'
 
 group :development do
   gem 'sinatra-reloader'
-  gem 'passenger'
-  gem 'ruby-debug'
-  #gem 'sprockets'
+  gem 'capistrano'
+  #gem 'ruby-debug'
+
+  gem 'thin'
+
+  #testing
+  gem 'rspec'
+  gem 'mocha'
+  gem 'guard-rspec'
 
   #irb stuff
   gem 'wirble'
