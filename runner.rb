@@ -1,5 +1,6 @@
+require 'init'
 require 'sinatra/base'
-require "sinatra/reloader" unless ENV['RACK_ENV'].to_sym == :production
+require 'redis'
 require 'json'
 require 'haml'
 
@@ -17,6 +18,7 @@ class Service < Sinatra::Base
     layout :layout
   end
   configure :development do |c|
+    require "sinatra/reloader"
     register Sinatra::Reloader
     c.also_reload "./lib/**/*.rb"
     c.also_reload "./views/**/*.rb"

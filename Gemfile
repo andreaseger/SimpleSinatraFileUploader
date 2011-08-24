@@ -8,7 +8,7 @@ gem 'json'
 group :development do
   gem 'sinatra-reloader'
   gem 'capistrano'
-  #gem 'ruby-debug'
+  gem 'ruby-debug'
 
   gem 'thin'
 

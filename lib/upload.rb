@@ -1,6 +1,15 @@
-require 'env'
 class Upload
   attr_accessor :org_filename
+
+  def params=(p)
+    self.org_filename = p[:filename]
+  end
+  def filename
+    @filename ||= makeFilename
+  end
+  def link
+    @link ||= "#{$config.image_dir}/#{filename}"
+  end
 
   def makeFilename
     if self.class.exists? org_filename
@@ -12,6 +21,6 @@ class Upload
   end
 
   def self.exists?(file)
-    File.exists? "./public/#{$env.image_dir}/#{file}"
+    File.exists? "./public/#{$config.image_dir}/#{file}"
   end
 end
