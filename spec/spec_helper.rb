@@ -1,8 +1,7 @@
 require 'rubygems'
-require 'rspec'
-require 'mocha'
-require 'sinatra/base'
+require 'bundler'
 
+Bundler.require
 require 'ostruct'
 require 'fileutils'
 

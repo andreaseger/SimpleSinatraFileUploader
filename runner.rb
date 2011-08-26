@@ -1,6 +1,5 @@
 require 'init'
 require 'sinatra/base'
-require 'redis'
 require 'json'
 require 'haml'
 
