@@ -1,9 +1,4 @@
 require './env'
-require 'sinatra/base'
-require "sinatra/reloader" unless ENV['RACK_ENV'].to_sym == :production
-require 'json'
-require 'haml'
-
 require './lib/helper'
 
 class Service < Sinatra::Base
@@ -23,6 +18,7 @@ class Service < Sinatra::Base
   end
 
   get '/' do
+    binding.pry
     haml :main
   end
 

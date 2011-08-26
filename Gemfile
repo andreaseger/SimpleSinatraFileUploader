@@ -6,10 +6,9 @@ gem 'haml'
 gem 'json'
 
 group :development do
-  gem 'sinatra-reloader'
-  gem 'passenger'
-  gem 'ruby-debug'
-  #gem 'sprockets'
+  gem 'sinatra-reloader', :require => 'sinatra/reloader'
+  gem 'thin'
+  gem 'pry'
 
   #irb stuff
   gem 'wirble'
