@@ -23,4 +23,7 @@ class Upload
   def self.exists?(file)
     File.exists? "./public/#{$config.image_dir}/#{file}"
   end
+  def self.filelist
+    Dir.glob("public/#{$config.image_dir}/*.*").map{|f| f.split('/').last}
+  end
 end

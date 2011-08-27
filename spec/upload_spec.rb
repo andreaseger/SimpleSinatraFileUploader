@@ -8,10 +8,10 @@ require 'lib/upload'
 
 describe Upload do
   #create and remove the tmp folder
-  before(:all) do
+  before(:each) do
     FileUtils.mkdir 'public/tmp'
   end
-  after(:all) do
+  after(:each) do
     FileUtils.remove_dir 'public/tmp'
   end
   let(:u){ Upload.new }
@@ -66,6 +66,7 @@ describe Upload do
     end
     context 'save' do
 
+
     end
   end
 
@@ -78,8 +79,31 @@ describe Upload do
       Upload.exists?("new_file.png").should be_false
     end
     it 'should return false if no file with that name exists' do
-      FileUtils.touch  "public/tmp/existing_file.png"
+      FileUtils.touch "public/tmp/existing_file.png"
       Upload.exists?("existing_file.png").should be_true
+    end
+  end
+  context 'self.filelist' do
+    let(:files){ %w(a_file.png another_file.png more_files.png this_file.png) }
+    before(:each) do
+      files.each do |f|
+        FileUtils.touch "public/tmp/#{f}"
+      end
+    end
+
+    let(:list){Upload.filelist}
+    it 'should return an array with all filenames in the storage folder' do
+      list.length.should eq(files.length)
+    end
+    it 'should include all existing files' do
+      files.each do |f|
+        list.include?(f).should be_true
+      end
+    end
+    it 'should include only the existing files' do
+      list.each do |f|
+        files.include?(f).should be_true
+      end
     end
   end
 end

@@ -5,10 +5,10 @@ gem 'sinatra'
 gem 'haml'
 gem 'json'
 
-group :development do
+group :development, :test do
   gem 'sinatra-reloader'
   gem 'capistrano'
-  gem 'ruby-debug'
+  gem 'pry'
 
   gem 'thin'
 
