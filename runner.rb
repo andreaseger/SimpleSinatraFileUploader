@@ -29,6 +29,9 @@ class Service < Sinatra::Base
     filelist.map{|f| {"image" => "/#{$env.imageStorage}/#{f}", "title" => f }}.to_json
   end
 
+  get '/editor' do
+    haml :"wmd-example"
+  end
   post '/filelist' do
     filelist.map{|f| {"link"=>"/#{$env.imageStorage}/#{f}","filename"=>f}}.to_json
   end
