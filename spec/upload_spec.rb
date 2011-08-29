@@ -85,13 +85,13 @@ describe Upload do
   end
   context 'self.filelist' do
     let(:files){ %w(a_file.png another_file.png more_files.png this_file.png) }
+    let(:list){Upload.filelist}
     before(:each) do
       files.each do |f|
         FileUtils.touch "public/tmp/#{f}"
       end
     end
 
-    let(:list){Upload.filelist}
     it 'should return an array with all filenames in the storage folder' do
       list.length.should eq(files.length)
     end
