@@ -1,7 +1,8 @@
 require 'rubygems'
 require 'bundler'
 
-Bundler.require(ENV['RACK_ENV'].to_sym)
+Bundler.setup
+Bundler.require(:development)
 
 require './runner'
 run Service

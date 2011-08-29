@@ -1,5 +1,6 @@
 require './env'
 require './lib/helper'
+require 'json'
 
 class Service < Sinatra::Base
   configure do |c|
@@ -18,8 +19,14 @@ class Service < Sinatra::Base
   end
 
   get '/' do
-    binding.pry
     haml :main
+  end
+
+  get '/gallery' do
+    haml :gallery
+  end
+  post '/gallery-data' do
+    filelist.map{|f| {"image" => "/#{$env.imageStorage}/#{f}", "title" => f }}.to_json
   end
 
   post '/filelist' do
@@ -27,6 +34,7 @@ class Service < Sinatra::Base
   end
 
   post '/' do
+    binding.pry
     filename, success, errors = save params['qqfile']
     "{success:#{success}, errors:#{errors}, link:'/#{$env.imageStorage}/#{filename}'}"
   end
@@ -55,11 +63,11 @@ private
       tempfile saveAsTmpFile(raw)
       filename = data
     end
-    valid, errors = validate tempfile.size, data[:type]
-    filename, write = getFilename(filename, tempfile)
-    errors[:not_new] = "the same file already existed" unless write
-    FileUtils.cp(tempfile.path, "#{image_base_dir}/#{filename}") if valid && write
-    return filename, valid, errors
+    #valid, errors = validate tempfile.size, data[:type]
+    #filename, write = getFilename(filename, tempfile)
+    #errors[:not_new] = "the same file already existed" unless write
+    FileUtils.cp(tempfile.path, "#{image_base_dir}/#{filename}")# if valid && write
+    return filename, true, ""#, valid, errors
   end
   def getFilename(org, tempfile)
     unless filelist.include? org
