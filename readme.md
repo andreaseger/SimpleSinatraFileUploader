@@ -1,18 +1,20 @@
 SimpleSinatraImageUploader
 ===
 
-Sinatra server-side solution for file-uploader.
+Think I will have to rename this project. At the moment I just use it to
+try various small js tools
 
-Aside from the uploader it self the javascript code is without any other
-framework. But I think about changing it to XUI, jQuery or something
-else.
-Also I will evaluate if a redis backend for the filelist, metadata or
-something else would be nice.
+- Sinatra server-side solution for file-uploader.
+- example for galleria
+- example for wmd
 
 meta
 ---
 
 - [file-uploader](https://github.com/valums/file-uploader)
+- [galleria](http://galleria.aino.se/)
+- [ChiperSoft/wmd](https://github.com/ChiperSoft/wmd) at least at the moment I
+  have this one running
 
 
 sch1zo

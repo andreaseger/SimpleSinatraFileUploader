@@ -1,12 +1,12 @@
--title 'WDM Editor'
-
-%a{:href=>"/"}
-  Uploader
+-title 'WMD Editor'
 
 #editor
-  %textarea#notes
+  #notes-button-bar
+  %textarea{:id=>'notes', :name=>'copy', :class=>'wmd-input'}
+  #notes-preview.wmd-preview
+  %textarea{:id=>'copy_html', :name=>'copy_html', :class=>'wmd-output', :style=>'width:500px;height:500px'}
 
 -stylesheet '/wmd.css'
--javascript '/jquery-1.6.2.min.js'
--javascript '/jquery.wmd.min.js'
+-javascript '/wmd.js'
+-javascript '/showdown.js'
 -javascript '/editor.js'

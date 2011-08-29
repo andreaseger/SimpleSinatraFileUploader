@@ -37,13 +37,11 @@ class Service < Sinatra::Base
   end
 
   post '/' do
-    binding.pry
-    filename, success, errors = save params['qqfile']
-    "{success:#{success}, errors:#{errors}, link:'/#{$env.imageStorage}/#{filename}'}"
+    filename = save params['qqfile']
+    "{success:true, link:'/#{$env.imageStorage}/#{filename}'}"
   end
 
   delete '/remove' do
-    require 'ruby-debug/debugger'
     filename = params['filename']
     FileUtils.rm("#{image_base_dir}/#{filename}")
     redirect '/'
@@ -59,19 +57,37 @@ private
   end
   def save(data)
     if data[:tempfile]
+      is_raw=false
       tempfile = data[:tempfile]
       filename = data[:filename]
     else
+      is_raw=true
       raw = request.env["rack.input"].read
-      tempfile saveAsTmpFile(raw)
       filename = data
     end
-    #valid, errors = validate tempfile.size, data[:type]
-    #filename, write = getFilename(filename, tempfile)
-    #errors[:not_new] = "the same file already existed" unless write
-    FileUtils.cp(tempfile.path, "#{image_base_dir}/#{filename}")# if valid && write
-    return filename, true, ""#, valid, errors
+
+
+    f = filename
+    if filelist.include? filename
+      m=filename.match /(.*)\.(.*)/
+      f = "#{m[1]}_#{Time.now.to_i}.#{m[2]}"
+    end
+
+    if is_raw
+      File.open("#{image_base_dir}/#{f}", "w") do |f| 
+        f.puts raw
+      end
+    else
+      FileUtils.cp(tempfile.path, "#{image_base_dir}/#{f}")
+    end
+    f
   end
+
+
+
+
+
+
   def getFilename(org, tempfile)
     unless filelist.include? org
       return org, true
